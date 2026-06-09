@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoShawk Extension - Capture Go Diagrams as SGF &amp; HEN</title>
+  <meta name="description" content="Browser extension for Chrome and Firefox that captures Go (Weiqi/Baduk) board diagrams and converts them into SGF or HEN format.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1612;
+      --fg: #f5f0e8;
+      --muted: #8b7355;
+      --accent: #c4956a;
+      --card: #2a241e;
+      --border: #3d352b;
+    }
+    :root.light-theme {
+      --bg: #f9f7f1;
+      --fg: #1a1612;
+      --muted: #6b563d;
+      --card: #ffffff;
+      --border: #dbcdb7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      margin: 0;
+      min-height: 100vh;
+    }
+    h1, h2, h3 { font-family: 'Noto Serif JP', serif; }
+    .bg-texture {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(196,149,106,.08) 0, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(139,115,85,.06) 0, transparent 50%),
+        var(--bg);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .fade-in {
+      animation: fadeIn .6s ease-out forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .slide-up {
+      animation: slideUp .6s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(196,149,106,.4);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .screenshot-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 40px rgba(0,0,0,.4);
+    }
+    .screenshot-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(196,149,106,.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .icon-circle svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, ::after, ::before {
+        animation-duration: 0s !important;
+        transition-duration: 0s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+
+  <main>
+    <section class="fade-in" style="max-width:960px;margin:0 auto;padding:64px 24px 48px;">
+      <div style="text-align:center;margin-bottom:48px;">
+        <h1 style="font-size:clamp(32px,6vw,56px);font-weight:700;margin:0 0 16px;line-height:1.1;">
+          GoShawk Extension
+        </h1>
+        <p style="font-size:clamp(16px,2.5vw,20px);color:var(--muted);max-width:600px;margin:0 auto 32px;line-height:1.5;">
+          Capture Go board diagrams from any webpage and convert them into SGF or HEN format - directly in your browser.
+        </p>
+        <div id="cta-buttons" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+          <a id="cta-chrome" href="https://chromewebstore.google.com/detail/goshawk/lkokidclkhollnfefccjiecddeimjkea" target="_blank" rel="noopener" class="btn-primary" style="display:none;">Chrome Web Store</a>
+          <a id="cta-firefox" href="https://addons.mozilla.org/en-US/firefox/addon/goshawk/" target="_blank" rel="noopener" class="btn-primary" style="display:none;">Firefox Add-ons</a>
+          <a id="cta-github" href="https://github.com/hemme/goshawk-extension" target="_blank" rel="noopener" class="btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+      <div class="screenshot-wrapper slide-up" style="animation-delay:.2s;">
+        <img src="https://lh3.googleusercontent.com/cVotvSRIYRGm7iejKxFkjTHJ-DEiXHeMSvX6tR1M-yhFBNeY1fdY7j1xlwxC6rtCEHrHWr5pZN5EZpS88Npq13mB5A=s1280-w1280-h800" alt="GoShawk Extension screenshot showing a Go board capture" width="1280" height="800" loading="lazy">
+      </div>
+    </section>
+
+    <section style="max-width:960px;margin:0 auto;padding:32px 24px 64px;">
+      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 40px;">Features</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;">
+        <div class="feature-card fade-in" style="animation-delay:.1s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Visual Capture</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Click the extension icon, drag to select any area of the page, and GoShawk snapshots it instantly.</p>
+        </div>
+        <div class="feature-card fade-in" style="animation-delay:.2s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">SGF &amp; HEN Export</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">The captured image is analyzed and the board position is reconstructed as SGF or HEN format, ready to use.</p>
+        </div>
+        <div class="feature-card fade-in" style="animation-delay:.3s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Cross-Browser</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Supports both Chrome (Manifest V3) and Firefox (&ge; 115) with native builds for each platform.</p>
+        </div>
+        <div class="feature-card fade-in" style="animation-delay:.4s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">100% Private</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Everything runs locally in the browser. No image is ever uploaded or sent to an external server.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="max-width:720px;margin:0 auto;padding:32px 24px 80px;">
+      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 40px;">How It Works</h2>
+      <div style="display:flex;flex-direction:column;gap:24px;">
+        <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.1s;">
+          <div class="step-number">1</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Activate</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Click the <strong style="color:var(--fg);">GoShawk</strong> toolbar icon on any page containing a Go diagram. The page dims and a crosshair cursor appears.</p>
+          </div>
+        </div>
+        <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.2s;">
+          <div class="step-number">2</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Select</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Drag to draw a rectangle around the board image you want to capture. Press <kbd style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;">Esc</kbd> to cancel.</p>
+          </div>
+        </div>
+        <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.3s;">
+          <div class="step-number">3</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Capture</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">GoShawk crops the selection using the Canvas API (respecting device pixel ratio) and opens a new tab with the SGF/HEN converter pre-loaded with your screenshot.</p>
+          </div>
+        </div>
+        <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.4s;">
+          <div class="step-number">4</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Export</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Use the converter to adjust intersections, verify stone placement, and export the final position as <strong style="color:var(--fg);">SGF</strong> or <strong style="color:var(--fg);">HEN</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
+    <p style="color:var(--muted);font-size:13px;margin:0 0 8px;">
+      GoShawk Extension &mdash; Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">GPL-3.0</a>
+    </p>
+    <p style="color:var(--muted);font-size:12px;margin:0 0 8px;">
+      The <em>sgf_from_image</em> component is &copy; <a href="https://github.com/kaorahi" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">kaorahi</a>, originally from <a href="https://github.com/kaorahi/lizgoban" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">LizGoban</a>.
+    </p>
+    <p style="color:var(--muted);font-size:12px;margin:0;">
+      <a href="https://github.com/hemme/goshawk-extension" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">GitHub Repository</a>
+    </p>
+  </footer>
+
+  <script>
+    (function () {
+      var ua = navigator.userAgent;
+      var isChromium = /Edg\//.test(ua) || /Chrome\//.test(ua) || /Chromium\//.test(ua);
+      var isFirefox = /Firefox\//.test(ua) && !/Seamonkey\//.test(ua);
+
+      var ctaChrome = document.getElementById('cta-chrome');
+      var ctaFirefox = document.getElementById('cta-firefox');
+
+      if (isChromium) ctaChrome.style.display = '';
+      else if (isFirefox) ctaFirefox.style.display = '';
+      else { ctaChrome.style.display = ''; ctaFirefox.style.display = ''; }
+
+      var root = document.documentElement;
+      var stored = localStorage.getItem('themePreference');
+      var isLight = stored === 'light';
+      if (isLight) root.classList.add('light-theme');
+
+      function updateIcons() {
+        var sun = document.getElementById('sunIcon');
+        var moon = document.getElementById('moonIcon');
+        if (root.classList.contains('light-theme')) {
+          sun.style.display = '';
+          moon.style.display = 'none';
+        } else {
+          sun.style.display = 'none';
+          moon.style.display = '';
+        }
+      }
+      updateIcons();
+
+      document.getElementById('themeToggle').addEventListener('click', function () {
+        root.classList.toggle('light-theme');
+        isLight = root.classList.contains('light-theme');
+        localStorage.setItem('themePreference', isLight ? 'light' : 'dark');
+        updateIcons();
+      });
+
+      window.addEventListener('storage', function (e) {
+        if (e.key === 'themePreference') {
+          isLight = e.newValue === 'light';
+          root.classList.toggle('light-theme', isLight);
+          updateIcons();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
