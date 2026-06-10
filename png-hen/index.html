@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PNG+hen - Goban Snapshots, Without OCR</title>
+  <meta name="description"
+    content="PNG+hen: a PNG image with embedded HEN metadata. Share goban snapshots and restore positions losslessly, no OCR needed.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1612;
+      --fg: #f5f0e8;
+      --muted: #8b7355;
+      --accent: #c4956a;
+      --card: #2a241e;
+      --border: #3d352b;
+    }
+
+    :root.light-theme {
+      --bg: #f9f7f1;
+      --fg: #1a1612;
+      --muted: #6b563d;
+      --card: #ffffff;
+      --border: #dbcdb7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Noto Serif JP', serif;
+    }
+
+    .bg-texture {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(196, 149, 106, .08) 0, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(139, 115, 85, .06) 0, transparent 50%),
+        var(--bg);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .fade-in {
+      animation: fadeIn .6s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .slide-up {
+      animation: slideUp .6s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes slideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(196, 149, 106, .4);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .screenshot-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+    }
+
+    .screenshot-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background-color: var(--card);
+    }
+
+    .icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(196, 149, 106, .15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+
+    .icon-circle svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .quote-block {
+      border-left: 3px solid var(--accent);
+      padding: 24px 28px;
+      background: var(--card);
+      border-radius: 0 12px 12px 0;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .quote-block p {
+      font-size: clamp(16px, 2.2vw, 19px);
+      font-style: italic;
+      line-height: 1.6;
+      margin: 0 0 12px;
+      color: var(--fg);
+    }
+
+    .quote-block cite {
+      font-style: normal;
+      font-size: 13px;
+      color: var(--muted);
+      display: block;
+    }
+
+    .uc-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .uc-badge.export {
+      background: rgba(196, 149, 106, .15);
+      color: var(--accent);
+    }
+
+    .uc-badge.import {
+      background: rgba(106, 149, 196, .15);
+      color: #6a95c4;
+    }
+
+    .uc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .uc-flow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .uc-flow-step {
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(196, 149, 106, .08);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      line-height: 1.4;
+    }
+
+    .uc-flow-arrow {
+      color: var(--muted);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .ecosystem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .eco-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-decoration: none;
+      color: var(--fg);
+      transition: transform .2s ease, border-color .2s ease;
+      display: block;
+    }
+
+    .eco-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .eco-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .eco-card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .eco-lang {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .hen-mono {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 13px;
+      background: rgba(196, 149, 106, .08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      word-break: break-all;
+    }
+
+    .plus-hen {
+      vertical-align: super;
+      font-size: 60%;
+    }
+
+    @media (max-width: 640px) {
+      .uc-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      ::after,
+      ::before {
+        animation-duration: 0s !important;
+        transition-duration: 0s !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="../index.html"
+    style="position:fixed;top:24px;left:24px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:var(--fg);cursor:pointer;z-index:100;transition:transform .2s ease, box-shadow .2s ease;text-decoration:none;"
+    aria-label="Back to Home" title="Back to Home">
+    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+  </a>
+  <button id="themeToggle"
+    style="position:fixed;top:24px;right:24px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:var(--fg);cursor:pointer;z-index:100;transition:transform .2s ease, box-shadow .2s ease;"
+    aria-label="Toggle Theme">
+    <svg id="sunIcon" style="display:none;" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+      stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+    <svg id="moonIcon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+  <div class="bg-texture"></div>
+
+  <main>
+    <section class="fade-in" style="max-width:960px;margin:0 auto;padding:64px 24px 48px;">
+      <div style="text-align:center;margin-bottom:48px;">
+        <h1 style="font-size:clamp(32px,7vw,64px);font-weight:700;margin:0 0 16px;line-height:1.1;">
+          PNG<sup class="plus-hen" style="color:var(--accent);">+hen</sup>
+        </h1>
+        <p
+          style="font-size:clamp(16px,2.5vw,20px);color:var(--muted);max-width:620px;margin:0 auto 32px;line-height:1.5;">
+          A picture with HEN metadata. Share a goban snapshot, restore the position without OCR.
+        </p>
+
+        <div class="quote-block" style="text-align:left; margin-bottom: 40px;">
+          <p title="This concept also applies to PNG+SGF files.">&ldquo;Imagine if we could share <strong
+              style="color:var(--accent);">kifu</strong>, <strong style="color:var(--accent);">tsumego</strong>, <strong
+              style="color:var(--accent);">joseki</strong> images
+            (PNG<sup class="plus-hen">+hen</sup>) and study them directly in our favorite app.&rdquo;</p>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+          <a href="https://github.com/hemme/hen-spec" target="_blank" rel="noopener" class="btn-primary">HEN Spec</a>
+          <a href="https://github.com/hemme?tab=repositories" target="_blank" rel="noopener" class="btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            Libraries
+          </a>
+        </div>
+      </div>
+      <div class="screenshot-wrapper slide-up" style="animation-delay:.2s; max-width:640px; margin:0 auto;">
+        <img src="https://wrk.goshawk.cc/c/hen.19x19_19bwb2w3_10Kb_8Kbw_7JbwMw_6Kbw_1Cw3bNwb2.L7.K7w.b.png"
+          alt="A 19x19 goban position rendered from HEN notation" width="640" height="640" loading="lazy">
+      </div>
+      <p
+        style="text-align:center;color:var(--muted);font-size:13px;margin:16px auto 0;max-width:640px;line-height:1.5;">
+        The image above is a live PNG<sup class="plus-hen">+hen</sup> generated by a <a
+          href="https://github.com/hemme/hen-worker" target="_blank" rel="noopener"
+          style="color:var(--accent);text-decoration:none;">hen-worker</a>.
+        <br />It contains the exact board position as embedded metadata.
+        <br />Extract it using <code class="hen-mono">exiftool -HEN image.png</code>,
+        <br />or load the image directly into <a href="https://play.GoShawk.cc/playgo/goban.html" target="_blank"
+          rel="noopener" style="color:var(--accent);text-decoration:none;">play.GoShawk.cc/playgo/goban.html</a>.
+      </p>
+    </section>
+
+    <section style="max-width:960px;margin:0 auto;padding:16px 24px 64px;">
+      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 40px;">What is PNG<sup
+          class="plus-hen">+hen</sup>?</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+        <div class="feature-card fade-in" style="animation-delay:.1s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+            </svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Goban as Data</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">A PNG image of the board with the HEN
+            string embedded as a PNG <code class="hen-mono">tEXt</code> metadata chunk. Machine-readable and
+            human-visible at the same time.</p>
+        </div>
+        <div class="feature-card fade-in" style="animation-delay:.2s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">No OCR Needed</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Unlike plain board screenshots, the
+            position is stored losslessly. Extract it with <code class="hen-mono">exiftool</code>, Pillow, or any
+            standard PNG reader - no image recognition required.</p>
+        </div>
+        <div class="feature-card fade-in" style="animation-delay:.3s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Universal Interchange</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Any app that supports HEN can import
+            the position directly from the image file. Drag, drop, paste - the goban is restored instantly.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="max-width:880px;margin:0 auto;padding:16px 24px 80px;">
+      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 16px;">Use Cases</h2>
+      <p style="text-align:center;color:var(--muted);font-size:14px;margin:0 0 48px;line-height:1.5;">
+        Use cases 1&ndash;3 happen on <strong style="color:var(--fg);">App A</strong> (export). Use cases 4&ndash;5
+        happen on <strong style="color:var(--fg);">App B</strong> (import).
+      </p>
+
+      <div class="uc-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <h3
+            style="font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin:0 0 20px;">
+            App A - Export</h3>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="uc-card fade-in" style="animation-delay:.1s;">
+              <span class="uc-badge export">UC 1</span>
+              <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Copy HEN</h4>
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open a finished game,
+                navigate to an interesting position.</p>
+              <div class="uc-flow">
+                <span class="uc-flow-step">Copy HEN</span>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-step">Clipboard</span>
+              </div>
+            </div>
+            <div class="uc-card fade-in" style="animation-delay:.2s;">
+              <span class="uc-badge export">UC 2</span>
+              <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Copy Image URL</h4>
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Navigate to a position, copy
+                the image URL.</p>
+              <div class="uc-flow">
+                <span class="uc-flow-step">Copy image URL</span>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-step" style="font-size:11px;word-break:break-all;"><code class="hen-mono"
+                    style="background:none;padding:0;">wrk.goshawk.cc/.../hen&lt;HEN&gt;.png</code></span>
+              </div>
+            </div>
+            <div class="uc-card fade-in" style="animation-delay:.3s;">
+              <span class="uc-badge export">UC 3</span>
+              <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Download PNG</h4>
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Navigate to a position,
+                download the goban picture.</p>
+              <div class="uc-flow">
+                <span class="uc-flow-step">Download</span>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-step">PNG<sup class="plus-hen">+hen</sup> file</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3
+            style="font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6a95c4;margin:0 0 20px;">
+            App B - Import</h3>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="uc-card fade-in" style="animation-delay:.4s;">
+              <span class="uc-badge import">UC 4</span>
+              <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Paste HEN</h4>
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open an analysis goban and
+                paste the HEN string.</p>
+              <div class="uc-flow">
+                <span class="uc-flow-step">Paste HEN</span>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-step" style="font-weight:600;">Goban updated</span>
+              </div>
+              <p style="color:var(--muted);font-size:11px;margin:8px 0 0;font-style:italic;">Reverse of UC 1.</p>
+            </div>
+            <div class="uc-card fade-in" style="animation-delay:.5s;">
+              <span class="uc-badge import">UC 5</span>
+              <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Paste Image</h4>
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open an analysis goban and
+                paste the PNG<sup class="plus-hen">+hen</sup> picture.</p>
+              <div class="uc-flow">
+                <span class="uc-flow-step">Paste picture</span>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-step" style="font-weight:600;">Goban updated</span>
+              </div>
+              <p style="color:var(--muted);font-size:11px;margin:8px 0 0;font-style:italic;">Reverse of UC 3. The app
+                reads the HEN from the PNG <code class="hen-mono">tEXt</code> chunk.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="max-width:880px;margin:0 auto;padding:16px 24px 80px;">
+      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 40px;">Ecosystem</h2>
+      <div class="ecosystem-grid">
+        <a href="https://github.com/hemme/hen-spec" target="_blank" rel="noopener" class="eco-card fade-in"
+          style="animation-delay:.1s;">
+          <div class="eco-lang">Format</div>
+          <h3>HEN Spec</h3>
+          <p>The specification and formal grammar (EBNF) for Hemme Notation.</p>
+        </a>
+        <a href="https://github.com/hemme/hen-js" target="_blank" rel="noopener" class="eco-card fade-in"
+          style="animation-delay:.15s;">
+          <div class="eco-lang">JavaScript</div>
+          <h3>hen-js</h3>
+          <p>Dependency-free library for converting between HEN and SGF formats.</p>
+        </a>
+        <a href="https://github.com/hemme/hen-python" target="_blank" rel="noopener" class="eco-card fade-in"
+          style="animation-delay:.2s;">
+          <div class="eco-lang">Python</div>
+          <h3>hen-python</h3>
+          <p>Python library for parsing and serializing HEN notation.</p>
+        </a>
+        <a href="https://github.com/hemme/hen-worker" target="_blank" rel="noopener" class="eco-card fade-in"
+          style="animation-delay:.25s;">
+          <div class="eco-lang">Cloudflare Worker</div>
+          <h3>hen-worker</h3>
+          <p>Dynamic goban image generator with embedded HEN metadata. Edge-native.</p>
+        </a>
+        <a href="../gsx/index.html" target="_blank" rel="noopener" class="eco-card fade-in"
+          style="animation-delay:.3s;">
+          <div class="eco-lang">Browser Extension</div>
+          <h3>GoShawk Extension</h3>
+          <p>Capture Go diagrams from any webpage and export as SGF or HEN.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
+    <p style="color:var(--muted);font-size:13px;margin:0 0 8px;">
+      PNG<sup class="plus-hen">+hen</sup> - Copyright &copy; 2026
+    </p>
+    <p style="color:var(--muted);font-size:12px;margin:0;">
+      <a href="https://github.com/hemme" target="_blank" rel="noopener"
+        style="color:var(--accent);text-decoration:none;">github.com/hemme</a>
+    </p>
+  </footer>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var stored = localStorage.getItem('themePreference');
+      var isLight = stored === 'light';
+      if (isLight) root.classList.add('light-theme');
+
+      function updateIcons() {
+        var sun = document.getElementById('sunIcon');
+        var moon = document.getElementById('moonIcon');
+        if (root.classList.contains('light-theme')) {
+          sun.style.display = '';
+          moon.style.display = 'none';
+        } else {
+          sun.style.display = 'none';
+          moon.style.display = '';
+        }
+      }
+      updateIcons();
+
+      document.getElementById('themeToggle').addEventListener('click', function () {
+        root.classList.toggle('light-theme');
+        isLight = root.classList.contains('light-theme');
+        localStorage.setItem('themePreference', isLight ? 'light' : 'dark');
+        updateIcons();
+      });
+
+      window.addEventListener('storage', function (e) {
+        if (e.key === 'themePreference') {
+          isLight = e.newValue === 'light';
+          root.classList.toggle('light-theme', isLight);
+          updateIcons();
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
