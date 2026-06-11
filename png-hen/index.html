@@ -258,6 +258,12 @@
       flex-shrink: 0;
     }
 
+    .uc-flow-effect {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
     .ecosystem-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -332,6 +338,43 @@
         transition-duration: 0s !important;
       }
     }
+
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: var(--bg);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      z-index: 200;
+      opacity: 0;
+      animation: toastIn .3s ease forwards, toastOut .3s ease 1.7s forwards;
+    }
+
+    @keyframes toastIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+      }
+    }
+
+    .uc-pulse {
+      animation: ucPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes ucPulse {
+      0%, 100% { background: rgba(196, 149, 106, .08); }
+      50% { background: rgba(196, 149, 106, .25); }
+    }
   </style>
 </head>
 
@@ -396,7 +439,7 @@
         </div>
       </div>
       <div class="screenshot-wrapper slide-up" style="animation-delay:.2s; max-width:640px; margin:0 auto;">
-        <img src="https://wrk.goshawk.cc/c/hen.19x19_19bwb2w3_10Kb_8Kbw_7JbwMw_6Kbw_1Cw3bNwb2.L7.K7w.b.png"
+        <img src="https://wrk.GoShawk.cc/cx/hen_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B.png"
           alt="A 19x19 goban position rendered from HEN notation" width="640" height="640" loading="lazy">
       </div>
       <p
@@ -428,6 +471,19 @@
             string embedded as a PNG <code class="hen-mono">tEXt</code> metadata chunk. Machine-readable and
             human-visible at the same time.</p>
         </div>
+        
+        <div class="feature-card fade-in" style="animation-delay:.3s;">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Universal Interchange</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Any app that supports HEN can import
+            the position directly from the image file. Drag, drop, paste - the goban is restored instantly.</p>
+        </div>
+
         <div class="feature-card fade-in" style="animation-delay:.2s;">
           <div class="icon-circle">
             <svg viewBox="0 0 24 24">
@@ -439,17 +495,6 @@
           <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Unlike plain board screenshots, the
             position is stored losslessly. Extract it with <code class="hen-mono">exiftool</code>, Pillow, or any
             standard PNG reader - no image recognition required.</p>
-        </div>
-        <div class="feature-card fade-in" style="animation-delay:.3s;">
-          <div class="icon-circle">
-            <svg viewBox="0 0 24 24">
-              <polyline points="16 18 22 12 16 6" />
-              <polyline points="8 6 2 12 8 18" />
-            </svg>
-          </div>
-          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Universal Interchange</h3>
-          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Any app that supports HEN can import
-            the position directly from the image file. Drag, drop, paste - the goban is restored instantly.</p>
         </div>
       </div>
     </section>
@@ -473,9 +518,9 @@
               <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open a finished game,
                 navigate to an interesting position.</p>
               <div class="uc-flow">
-                <span class="uc-flow-step">Copy HEN</span>
+                <span class="uc-flow-step uc-pulse" id="uc-1" style="cursor:pointer;" title="Try me!">Copy HEN</span>
                 <span class="uc-flow-arrow">&rarr;</span>
-                <span class="uc-flow-step">Clipboard</span>
+                <span class="uc-flow-effect">Clipboard</span>
               </div>
             </div>
             <div class="uc-card fade-in" style="animation-delay:.2s;">
@@ -484,9 +529,9 @@
               <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Navigate to a position, copy
                 the image URL.</p>
               <div class="uc-flow">
-                <span class="uc-flow-step">Copy image URL</span>
+                <span class="uc-flow-step uc-pulse" id="uc-2" style="cursor:pointer;" title="Try me!">Copy image URL</span>
                 <span class="uc-flow-arrow">&rarr;</span>
-                <span class="uc-flow-step" style="font-size:11px;word-break:break-all;"><code class="hen-mono"
+                <span class="uc-flow-effect" style="font-size:11px;word-break:break-all;"><code class="hen-mono"
                     style="background:none;padding:0;">wrk.goshawk.cc/.../hen&lt;HEN&gt;.png</code></span>
               </div>
             </div>
@@ -496,9 +541,9 @@
               <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Navigate to a position,
                 download the goban picture.</p>
               <div class="uc-flow">
-                <span class="uc-flow-step">Download</span>
+                <span class="uc-flow-step uc-pulse" id="uc-3" style="cursor:pointer;" title="Try me!">Download</span>
                 <span class="uc-flow-arrow">&rarr;</span>
-                <span class="uc-flow-step">PNG<sup class="plus-hen">+hen</sup> file</span>
+                <span class="uc-flow-effect">PNG<sup class="plus-hen">+hen</sup> file</span>
               </div>
             </div>
           </div>
@@ -512,24 +557,24 @@
             <div class="uc-card fade-in" style="animation-delay:.4s;">
               <span class="uc-badge import">UC 4</span>
               <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Paste HEN</h4>
-              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open an analysis goban and
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open an <a href="https://play.GoShawk.cc/playgo/goban.html" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">analysis goban</a> and
                 paste the HEN string.</p>
               <div class="uc-flow">
                 <span class="uc-flow-step">Paste HEN</span>
                 <span class="uc-flow-arrow">&rarr;</span>
-                <span class="uc-flow-step" style="font-weight:600;">Goban updated</span>
+                <span class="uc-flow-effect" style="font-weight:600;">Goban updated</span>
               </div>
               <p style="color:var(--muted);font-size:11px;margin:8px 0 0;font-style:italic;">Reverse of UC 1.</p>
             </div>
             <div class="uc-card fade-in" style="animation-delay:.5s;">
               <span class="uc-badge import">UC 5</span>
               <h4 style="font-size:15px;font-weight:700;margin:0 0 8px;">Paste Image</h4>
-              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open an analysis goban and
+              <p style="color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 10px;">Open an <a href="https://play.GoShawk.cc/playgo/goban.html" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">analysis goban</a> and
                 paste the PNG<sup class="plus-hen">+hen</sup> picture.</p>
               <div class="uc-flow">
                 <span class="uc-flow-step">Paste picture</span>
                 <span class="uc-flow-arrow">&rarr;</span>
-                <span class="uc-flow-step" style="font-weight:600;">Goban updated</span>
+                <span class="uc-flow-effect" style="font-weight:600;">Goban updated</span>
               </div>
               <p style="color:var(--muted);font-size:11px;margin:8px 0 0;font-style:italic;">Reverse of UC 3. The app
                 reads the HEN from the PNG <code class="hen-mono">tEXt</code> chunk.</p>
@@ -577,12 +622,9 @@
   </main>
 
   <footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
-    <p style="color:var(--muted);font-size:13px;margin:0 0 8px;">
-      PNG<sup class="plus-hen">+hen</sup> - Copyright &copy; 2026
-    </p>
     <p style="color:var(--muted);font-size:12px;margin:0;">
-      <a href="https://github.com/hemme" target="_blank" rel="noopener"
-        style="color:var(--accent);text-decoration:none;">github.com/hemme</a>
+      [ <a href="https://github.com/hemme?tab=repositories" target="_blank" rel="noopener"
+        style="color:var(--accent);text-decoration:none;">github.com/hemme</a> ]
     </p>
   </footer>
   <script>
@@ -618,6 +660,41 @@
           root.classList.toggle('light-theme', isLight);
           updateIcons();
         }
+      });
+
+      var henStr = '_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B';
+      var imgUrl = 'https://wrk.goshawk.cc/cx/hen.13x13_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B.png';
+
+      function showToast(msg) {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function () { t.remove(); }, 2200);
+      }
+
+      document.getElementById('uc-1').addEventListener('click', function () {
+        navigator.clipboard.writeText(henStr).then(function () {
+          showToast('HEN copied to clipboard');
+        });
+      });
+
+      document.getElementById('uc-2').addEventListener('click', function () {
+        navigator.clipboard.writeText(imgUrl).then(function () {
+          showToast('Image URL copied to clipboard');
+        });
+      });
+
+      document.getElementById('uc-3').addEventListener('click', function () {
+        var a = document.createElement('a');
+        a.href = imgUrl;
+        a.download = imgUrl.split('/').pop();
+        a.target = '_blank';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Download started — right-click to save if needed');
       });
     })();
   </script>
