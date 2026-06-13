@@ -199,6 +199,47 @@
       opacity: 0 !important;
       pointer-events: none !important;
     }
+
+    div[title] {
+      cursor: help;
+    }
+
+    /* Refactored typography rules */
+    #top h1 {
+      font-size: clamp(32px, 6vw, 56px);
+    }
+
+    #top>div>p {
+      font-size: clamp(18px, 2.5vw, 20px);
+    }
+
+    section h2 {
+      font-size: 28px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+    }
+
+    .feature-card p {
+      font-size: 16px;
+    }
+
+    .step-content h3 {
+      font-size: 18px;
+    }
+
+    .step-content p {
+      font-size: 16px;
+    }
+
+    footer p {
+      font-size: 12px;
+    }
+
+    footer p.license {
+      font-size: 14px;
+    }
   </style>
 </head>
 
@@ -235,13 +276,12 @@
   <div class="bg-texture"></div>
 
   <main>
-    <section class="fade-in" style="max-width:960px;margin:0 auto;padding:64px 24px 48px;">
+    <section id="top" class="fade-in" style="max-width:960px;margin:0 auto;padding:64px 24px 48px;">
       <div style="text-align:center;margin-bottom:48px;">
-        <h1 style="font-size:clamp(32px,6vw,56px);font-weight:700;margin:0 0 16px;line-height:1.1;">
+        <h1 style="font-weight:700;margin:0 0 16px;line-height:1.1;">
           GoShawk Extension
         </h1>
-        <p
-          style="font-size:clamp(16px,2.5vw,20px);color:var(--muted);max-width:600px;margin:0 auto 32px;line-height:1.5;">
+        <p style="color:var(--muted);max-width:600px;margin:0 auto 32px;line-height:1.5;">
           Capture Go board diagrams from any webpage and convert them into SGF or HEN format - directly in your browser.
         </p>
         <div id="cta-buttons" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
@@ -267,7 +307,7 @@
     </section>
 
     <section style="max-width:960px;margin:0 auto;padding:32px 24px 64px;">
-      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 40px;">Features</h2>
+      <h2 style="font-weight:700;text-align:center;margin:0 0 40px;">Features</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;">
         <div class="feature-card fade-in" style="animation-delay:.1s;">
           <div class="icon-circle">
@@ -279,8 +319,8 @@
               <line x1="3" y1="15" x2="21" y2="15" />
             </svg>
           </div>
-          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Visual Capture</h3>
-          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Click the extension icon, drag to
+          <h3 style="font-weight:700;margin:0 0 8px;">Visual Capture</h3>
+          <p style="color:var(--muted);line-height:1.5;margin:0;">Click the extension icon, drag to
             select any area of the page, and GoShawk snapshots it instantly.</p>
         </div>
         <div class="feature-card fade-in" style="animation-delay:.2s;">
@@ -290,8 +330,8 @@
               <polyline points="8 6 2 12 8 18" />
             </svg>
           </div>
-          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">SGF &amp; HEN Export</h3>
-          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">The captured image is analyzed and the
+          <h3 style="font-weight:700;margin:0 0 8px;">SGF &amp; HEN Export</h3>
+          <p style="color:var(--muted);line-height:1.5;margin:0;">The captured image is analyzed and the
             board position is reconstructed as SGF or HEN format, ready to use.</p>
         </div>
         <div class="feature-card fade-in" style="animation-delay:.3s;">
@@ -302,8 +342,8 @@
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
             </svg>
           </div>
-          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">Cross-Browser</h3>
-          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Supports both Chrome (Manifest V3) and
+          <h3 style="font-weight:700;margin:0 0 8px;">Cross-Browser</h3>
+          <p style="color:var(--muted);line-height:1.5;margin:0;">Supports both Chrome (Manifest V3) and
             Firefox (&ge; 115) with native builds for each platform.</p>
         </div>
         <div class="feature-card fade-in" style="animation-delay:.4s;">
@@ -313,30 +353,30 @@
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
-          <h3 style="font-size:18px;font-weight:700;margin:0 0 8px;">100% Private</h3>
-          <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Everything runs locally in the browser.
+          <h3 style="font-weight:700;margin:0 0 8px;">100% Private</h3>
+          <p style="color:var(--muted);line-height:1.5;margin:0;">Everything runs locally in the browser.
             No image is ever uploaded or sent to an external server.</p>
         </div>
       </div>
     </section>
 
     <section style="max-width:720px;margin:0 auto;padding:32px 24px 80px;">
-      <h2 style="font-size:28px;font-weight:700;text-align:center;margin:0 0 40px;">How It Works</h2>
+      <h2 style="font-weight:700;text-align:center;margin:0 0 40px;">How It Works</h2>
       <div style="display:flex;flex-direction:column;gap:24px;">
         <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.1s;">
           <div class="step-number">1</div>
-          <div>
-            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Activate</h3>
-            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Click the <strong
+          <div class="step-content">
+            <h3 style="font-weight:600;margin:0 0 4px;">Activate</h3>
+            <p style="color:var(--muted);line-height:1.5;margin:0;">Click the <strong
                 style="color:var(--fg);">GoShawk</strong> toolbar icon on any page containing a Go diagram. The page
               dims and a crosshair cursor appears.</p>
           </div>
         </div>
         <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.2s;">
           <div class="step-number">2</div>
-          <div>
-            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Select</h3>
-            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Drag to draw a rectangle around the
+          <div class="step-content">
+            <h3 style="font-weight:600;margin:0 0 4px;">Select</h3>
+            <p style="color:var(--muted);line-height:1.5;margin:0;">Drag to draw a rectangle around the
               board image you want to capture. Press <kbd
                 style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;">Esc</kbd>
               to cancel.</p>
@@ -344,18 +384,18 @@
         </div>
         <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.3s;">
           <div class="step-number">3</div>
-          <div>
-            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Capture</h3>
-            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">GoShawk crops the selection using the
+          <div class="step-content">
+            <h3 style="font-weight:600;margin:0 0 4px;">Capture</h3>
+            <p style="color:var(--muted);line-height:1.5;margin:0;">GoShawk crops the selection using the
               Canvas API (respecting device pixel ratio) and opens a new tab with the SGF/HEN converter pre-loaded with
               your screenshot.</p>
           </div>
         </div>
         <div class="fade-in" style="display:flex;gap:16px;align-items:flex-start;animation-delay:.4s;">
           <div class="step-number">4</div>
-          <div>
-            <h3 style="font-size:16px;font-weight:600;margin:0 0 4px;">Export</h3>
-            <p style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">Use the converter to adjust
+          <div class="step-content">
+            <h3 style="font-weight:600;margin:0 0 4px;">Export</h3>
+            <p style="color:var(--muted);line-height:1.5;margin:0;">Use the converter to adjust
               intersections, verify stone placement, and export the final position as <strong
                 style="color:var(--fg);">SGF</strong> or <strong style="color:var(--fg);">HEN</strong>.</p>
           </div>
@@ -365,17 +405,17 @@
   </main>
 
   <footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
-    <p style="color:var(--muted);font-size:13px;margin:0 0 8px;">
+    <p class="license" style="color:var(--muted);margin:0 0 8px;">
       GoShawk Extension - Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener"
         style="color:var(--accent);text-decoration:none;">GPL-3.0</a>
     </p>
-    <p style="color:var(--muted);font-size:12px;margin:0 0 8px;">
+    <p style="color:var(--muted);margin:0 0 8px;">
       The <em>sgf_from_image</em> component is &copy; <a href="https://github.com/kaorahi" target="_blank"
         rel="noopener" style="color:var(--accent);text-decoration:none;">kaorahi</a>, originally from <a
         href="https://github.com/kaorahi/lizgoban" target="_blank" rel="noopener"
         style="color:var(--accent);text-decoration:none;">LizGoban</a>.
     </p>
-    <p style="color:var(--muted);font-size:12px;margin:0;">
+    <p style="color:var(--muted);margin:0;">
       [ <a href="https://github.com/hemme/goshawk-extension" target="_blank" rel="noopener"
         style="color:var(--accent);text-decoration:none;">github.com/hemme/goshawk-extension</a> ]
     </p>
