@@ -4,10 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="5; url=../pic-plus/index.html">
-  <title>PNG+hen - Goban Snapshots, Without OCR</title>
+  <title>PIC+hen - Goban Snapshots, Without OCR</title>
   <meta name="description"
-    content="PNG+hen: a PNG image with embedded HEN metadata. Share goban snapshots and restore positions losslessly, no OCR needed.">
+    content="PIC+hen: a PIC image with embedded HEN metadata. Share goban snapshots and restore positions losslessly, no OCR needed.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap"
@@ -452,12 +451,6 @@
 </head>
 
 <body>
-  <div id="redirect-banner" role="alert"
-    style="position:relative;z-index:50;width:100%;text-align:center;background:var(--accent);color:var(--bg);padding:12px 16px;font-size:clamp(14px,2.5vw,16px);line-height:1.4;font-weight:600;">
-    This is an older version of this page. You will be redirected to the current page in
-    <span id="redirect-countdown">5</span> seconds.
-    <a href="../pic-plus/index.html" style="color:var(--bg);text-decoration:underline;display:inline-block;margin-left:6px;">Click here if you are not redirected.</a>
-  </div>
   <a href="../index.html" id="homeBtn" class="initial" target="_top"
     style="position:fixed;top:24px;left:24px;background:var(--card);border:1px solid var(--border);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:var(--fg);cursor:pointer;z-index:100;transition:opacity .4s ease, transform .2s ease, box-shadow .2s ease;text-decoration:none;"
     aria-label="Back to Home" title="Back to Home">
@@ -493,17 +486,17 @@
     <section id="top" class="fade-in" style="max-width:960px;margin:0 auto;padding:64px 24px 48px;">
       <div style="text-align:center;margin-bottom:48px;">
         <h1 style="font-weight:700;margin:0 0 16px;line-height:1.1;">
-          PNG<sup class="plus-hen" style="color:var(--accent);">+hen</sup>
+          PIC<sup class="plus-hen" style="color:var(--accent);">+hen</sup>
         </h1>
         <p style="color:var(--muted);max-width:620px;margin:0 auto 32px;line-height:1.5;">
           A picture with HEN metadata. Share a goban snapshot, restore the position without OCR.
         </p>
 
-        <div class="quote-block" title="This concept also applies to PNG+SGF files."
+        <div class="quote-block" title="This concept also applies to PIC+SGF files."
           style="text-align:left; margin-bottom: 40px;">
           <p>&laquo;Imagine if we could share <strong style="color:var(--accent);">kifu</strong>, <strong
               style="color:var(--accent);">tsumego</strong>, <strong style="color:var(--accent);">joseki</strong> images
-            (PNG<sup class="plus-hen">+hen</sup>) and study them directly in our favorite app.&raquo;</p>
+            (PIC<sup class="plus-hen">+hen</sup>) and study them directly in our favorite app.&raquo;</p>
         </div>
 
         <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
@@ -533,7 +526,7 @@
     </section>
 
     <section id="what-is" style="max-width:960px;margin:0 auto;padding:16px 24px 64px;">
-      <h2 style="font-weight:700;text-align:center;margin:0 0 40px;">What is PNG<sup class="plus-hen">+hen</sup>?</h2>
+      <h2 style="font-weight:700;text-align:center;margin:0 0 40px;">What is PIC<sup class="plus-hen">+hen</sup>?</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
         <div class="feature-card fade-in" style="animation-delay:.1s;">
           <div class="icon-circle">
@@ -544,9 +537,13 @@
             </svg>
           </div>
           <h3 style="font-weight:700;margin:0 0 8px;">Goban as Data</h3>
-          <p style="color:var(--muted);line-height:1.5;margin:0;">A PNG image of the board with the HEN
-            string embedded as a PNG <code class="hen-mono">tEXt</code> metadata chunk. Machine-readable and
-            human-visible at the same time.</p>
+          <p style="color:var(--muted);line-height:1.5;margin:0;">An image of the board with the HEN
+            string embedded, <strong>machine-readable</strong> and <strong>human-visible</strong> at the same time.
+            <br/>
+            For PNG images, it is stored as a <code class="hen-mono">tEXt</code> metadata chunk. 
+            <br/>
+            For GIF images, it is stored as a <code class="hen-mono">Comment Extension</code> block. 
+          </p>
         </div>
 
         <div class="feature-card fade-in" style="animation-delay:.3s;">
@@ -571,7 +568,7 @@
           <h3 style="font-weight:700;margin:0 0 8px;">No OCR Needed</h3>
           <p style="color:var(--muted);line-height:1.5;margin:0;">Unlike plain board screenshots, the
             position is stored losslessly. Extract it with <code class="hen-mono">exiftool</code>, Pillow, or any
-            standard PNG reader - no image recognition required.</p>
+            standard image reader - no image recognition required.</p>
         </div>
       </div>
     </section>
@@ -579,7 +576,7 @@
     <section id="use-cases" style="max-width:880px;margin:0 auto;padding:16px 24px 80px;">
       <h2 style="font-weight:700;text-align:center;margin:0 0 16px;">Use Cases</h2>
       <p style="text-align:center;color:var(--muted);margin:0 0 48px;line-height:1.5;">
-        Use cases 1&ndash;3 happen on <strong style="color:var(--fg);">App A</strong> (export). Use cases 4&ndash;5
+        Use cases 1&ndash;3 happen on <strong style="color:var(--fg);">App A</strong> (export).<br/>Use cases 4&ndash;5
         happen on <strong style="color:var(--fg);">App B</strong> (import).
       </p>
 
@@ -615,15 +612,27 @@
               </div>
             </div>
             <div class="uc-card fade-in" style="animation-delay:.3s;">
-              <span class="uc-badge export">UC 3</span>
+              <span class="uc-badge export">UC 3/a</span>
               <h4 style="font-weight:700;margin:0 0 8px;">Download PNG</h4>
               <p style="color:var(--muted);line-height:1.5;margin:0 0 10px;">Navigate to a position,
-                download the goban picture.</p>
+                download the goban picture as PNG.</p>
               <div class="uc-flow">
-                <button class="uc-flow-step uc-pulse" id="uc-3" style="cursor:pointer;"
+                <button class="uc-flow-step uc-pulse" id="uc-3a" style="cursor:pointer;"
                   title="Try me!">Download</button>
                 <span class="uc-flow-arrow">&rarr;</span>
                 <span class="uc-flow-effect">PNG<sup class="plus-hen">+hen</sup> file</span>
+              </div>
+            </div>
+            <div class="uc-card fade-in" style="animation-delay:.3s;">
+              <span class="uc-badge export">UC 3/b</span>
+              <h4 style="font-weight:700;margin:0 0 8px;">Download GIF</h4>
+              <p style="color:var(--muted);line-height:1.5;margin:0 0 10px;">Navigate to a position,
+                download the goban picture as GIF.</p>
+              <div class="uc-flow">
+                <button class="uc-flow-step uc-pulse" id="uc-3b" style="cursor:pointer;"
+                  title="Try me!">Download</button>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-effect">GIF<sup class="plus-hen">+hen</sup> file</span>
               </div>
             </div>
           </div>
@@ -635,32 +644,47 @@
           <div style="display:flex;flex-direction:column;gap:16px;">
             <div class="uc-card fade-in" style="animation-delay:.4s;">
               <span class="uc-badge import">UC 4</span>
-              <h4 style="font-weight:700;margin:0 0 8px;">Paste HEN</h4>
+              <h4 style="font-weight:700;margin:0 0 8px;">Import HEN</h4>
               <p style="color:var(--muted);line-height:1.5;margin:0 0 10px;">Open an <a
                   href="https://play.GoShawk.cc/playgo/goban.html" target="_blank" rel="noopener"
                   style="color:var(--accent);text-decoration:none;">analysis goban</a> and
                 paste the HEN string.</p>
               <div class="uc-flow">
-                <span class="uc-flow-step">Paste HEN</span>
+                <span class="uc-flow-step">Import HEN</span>
                 <span class="uc-flow-arrow">&rarr;</span>
                 <span class="uc-flow-effect" style="font-weight:600;">Goban updated</span>
               </div>
               <p class="hint" style="color:var(--muted);margin:8px 0 0;font-style:italic;">Reverse of UC 1.</p>
             </div>
             <div class="uc-card fade-in" style="animation-delay:.5s;">
-              <span class="uc-badge import">UC 5</span>
-              <h4 style="font-weight:700;margin:0 0 8px;">Paste Image</h4>
+              <span class="uc-badge import">UC 5/a</span>
+              <h4 style="font-weight:700;margin:0 0 8px;">Import PNG Image</h4>
               <p style="color:var(--muted);line-height:1.5;margin:0 0 10px;">Open an <a
                   href="https://play.GoShawk.cc/playgo/goban.html" target="_blank" rel="noopener"
                   style="color:var(--accent);text-decoration:none;">analysis goban</a> and
-                paste the PNG<sup class="plus-hen">+hen</sup> picture.</p>
+                load the PNG<sup class="plus-hen">+hen</sup> picture → import it via paste, drop, or open, depending on the app.</p>
               <div class="uc-flow">
-                <span class="uc-flow-step">Paste picture</span>
+                <span class="uc-flow-step">Import picture</span>
                 <span class="uc-flow-arrow">&rarr;</span>
                 <span class="uc-flow-effect" style="font-weight:600;">Goban updated</span>
               </div>
-              <p class="hint" style="color:var(--muted);margin:8px 0 0;font-style:italic;">Reverse of UC 3. The app
+              <p class="hint" style="color:var(--muted);margin:8px 0 0;font-style:italic;">Reverse of UC 3/A. The app
                 reads the HEN from the PNG <code class="hen-mono">tEXt</code> chunk.</p>
+            </div>
+            <div class="uc-card fade-in" style="animation-delay:.5s;">
+              <span class="uc-badge import">UC 5/b</span>
+              <h4 style="font-weight:700;margin:0 0 8px;">Import GIF Image</h4>
+              <p style="color:var(--muted);line-height:1.5;margin:0 0 10px;">Open an <a
+                  href="https://play.GoShawk.cc/playgo/goban.html" target="_blank" rel="noopener"
+                  style="color:var(--accent);text-decoration:none;">analysis goban</a> and
+                load the GIF<sup class="plus-hen">+hen</sup> picture → import it via paste, drop, or open, depending on the app.</p>
+              <div class="uc-flow">
+                <span class="uc-flow-step">Import picture</span>
+                <span class="uc-flow-arrow">&rarr;</span>
+                <span class="uc-flow-effect" style="font-weight:600;">Goban updated</span>
+              </div>
+              <p class="hint" style="color:var(--muted);margin:8px 0 0;font-style:italic;">Reverse of UC 3/B. The app
+                reads the HEN from the GIF <code class="hen-mono">Comment Extension</code> chunk.</p>
             </div>
           </div>
         </div>
@@ -680,7 +704,7 @@
           style="animation-delay:.15s;">
           <div class="eco-lang">JavaScript</div>
           <h3>hen-js</h3>
-          <p>Dependency-free library for converting between HEN and SGF formats.</p>
+          <p>Dependency-free library for converting between HEN and SGF formats, building PIC<sup class="plus-hen">+hen</sup> files, extracting HEN metadata from PIC<sup class="plus-hen">+hen</sup> files.</p>
         </a>
         <a href="https://github.com/hemme/hen-python" target="_blank" rel="noopener" class="eco-card fade-in"
           style="animation-delay:.2s;">
@@ -698,7 +722,7 @@
           style="animation-delay:.3s;">
           <div class="eco-lang">Browser Extension</div>
           <h3>GoShawk Extension</h3>
-          <p>Capture Go diagrams from any webpage and export as SGF or HEN.</p>
+          <p>Capture Go diagrams from any webpage and export as SGF / HEN / PNG<sup class="plus-hen">+hen</sup>/ GIF<sup class="plus-hen">+hen</sup>.</p>
         </a>
       </div>
     </section>
@@ -719,7 +743,7 @@
 
       var root = document.documentElement;
       var stored = localStorage.getItem('themePreference');
-      var isLight = stored === 'light';
+      var isLight = stored !== 'dark';
       if (isLight) root.classList.add('light-theme');
 
       function updateIcons() {
@@ -751,7 +775,8 @@
       });
 
       var henStr = '_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B';
-      var imgUrl = 'https://wrk.goshawk.cc/cx/hen.13x13_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B.png';
+      var imgUrlPng = 'https://wrk.goshawk.cc/cx/hen.13x13_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B.png';
+      var imgUrlGif = 'https://wrk.goshawk.cc/cx/hen.13x13_7Cw_5CbE~5~4_4E~6~3~2_3DbF~1HbKw~wb.E4b.w.H2-A.D2-B.gif';
 
       function showToast(msg) {
         var t = document.createElement('div');
@@ -768,15 +793,15 @@
       });
 
       document.getElementById('uc-2').addEventListener('click', function () {
-        navigator.clipboard.writeText(imgUrl).then(function () {
+        navigator.clipboard.writeText(imgUrlPng).then(function () {
           showToast('Image URL copied to clipboard');
         });
       });
 
-      document.getElementById('uc-3').addEventListener('click', function () {
+      document.getElementById('uc-3a').addEventListener('click', function () {
         var a = document.createElement('a');
-        a.href = imgUrl;
-        a.download = imgUrl.split('/').pop();
+        a.href = imgUrlPng;
+        a.download = imgUrlPng.split('/').pop();
         a.target = '_blank';
         a.rel = 'noopener';
         document.body.appendChild(a);
@@ -785,20 +810,17 @@
         showToast('Download started — right-click to save if needed');
       });
 
-      setTimeout(function () {
-        location.replace('../pic-plus/index.html');
-      }, 5000);
-
-      (function () {
-        var el = document.getElementById('redirect-countdown');
-        if (!el) return;
-        var n = 5;
-        var timer = setInterval(function () {
-          n -= 1;
-          el.textContent = n;
-          if (n <= 0) clearInterval(timer);
-        }, 1000);
-      })();
+      document.getElementById('uc-3b').addEventListener('click', function () {
+        var a = document.createElement('a');
+        a.href = imgUrlGif;
+        a.download = imgUrlGif.split('/').pop();
+        a.target = '_blank';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Download started — right-click to save if needed');
+      });
     })();
   </script>
 </body>
